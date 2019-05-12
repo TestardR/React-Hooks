@@ -24,12 +24,14 @@ const Todo = () => {
   };
 
   const todoAddHandler = () => {
-    setTodoList(todoList.concat(todo));
     axios
       .post('https://react-hook-fdd12.firebaseio.com/todos.json', {
         name: todo
       })
-      .then(res => console.log(res))
+      .then(res => {
+        const todoItem = { id: res.data.name, name: todo };
+        setTodoList(todoList.concat(todoItem));
+      })
       .catch(err => {
         console.log(err);
       });
