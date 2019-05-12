@@ -1,8 +1,23 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Todo = () => {
   const [todo, setTodo] = useState('');
   const [todoList, setTodoList] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get('https://react-hook-fdd12.firebaseio.com/todos.json')
+      .then(res => {
+        const todosData = res.data;
+        const todos = [];
+        for (const key in todosData) {
+          todos.push({ id: key, name: todosData[key].name });
+        }
+        setTodoList(todos);
+        console.log(todos);
+      });
+  }, [todo]);
 
   const intputChangeHandler = e => {
     setTodo(e.target.value);
@@ -10,6 +25,14 @@ const Todo = () => {
 
   const todoAddHandler = () => {
     setTodoList(todoList.concat(todo));
+    axios
+      .post('https://react-hook-fdd12.firebaseio.com/todos.json', {
+        name: todo
+      })
+      .then(res => console.log(res))
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   return (
@@ -25,7 +48,7 @@ const Todo = () => {
       </button>
       <ul>
         {todoList.map(todo => (
-          <li key={todo}>{todo}</li>
+          <li key={todo.id}>{todo.name}</li>
         ))}
       </ul>
     </Fragment>
